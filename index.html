@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب ANOVA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            direction: rtl;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #1d0a74;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 6px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #1d0a74;
+        }
+
+        button {
+            display: block;
+            margin: 30px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #1d0a74;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #4c2d9b;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background-color: #1d0a74;
+            transform: translateY(2px);
+        }
+
+        .result-table {
+            margin-top: 30px;
+            width: 80%;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: white;
+            background-color: #1d0a74;
+            padding: 12px 24px;
+            border-radius: 5px;
+            text-align: center;
+            display: inline-block;
+            font-size: 18px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #4b0073;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>حساب ANOVA</h2>
+
+    <form id="temperatureForm">
+        <table>
+            <thead>
+                <tr>
+                    <th>الخميس</th>
+                    <th>الأربعاء</th>
+                    <th>الثلاثاء</th>
+                    <th>الإثنين</th>
+                    <th>الأحد</th>
+                    <th>المدينة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="number" id="Mansoura1" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Mansoura2" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Mansoura3" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Mansoura4" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Mansoura5" placeholder="0" max="300"></td>
+                    <td>Mansoura</td>
+                </tr>
+                <tr>
+                    <td><input type="number" id="Alexandria1" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Alexandria2" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Alexandria3" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Alexandria4" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Alexandria5" placeholder="0" max="300"></td>
+                    <td>Alexandria</td>
+                </tr>
+                <tr>
+                    <td><input type="number" id="Manzala1" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Manzala2" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Manzala3" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Manzala4" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Manzala5" placeholder="0" max="300"></td>
+                    <td>Manzala</td>
+                </tr>
+                <tr>
+                    <td><input type="number" id="Cairo1" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Cairo2" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Cairo3" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Cairo4" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Cairo5" placeholder="0" max="300"></td>
+                    <td>Cairo</td>
+                </tr>
+                <tr>
+                    <td><input type="number" id="Salsel1" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Salsel2" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Salsel3" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Salsel4" placeholder="0" max="300"></td>
+                    <td><input type="number" id="Salsel5" placeholder="0" max="300"></td>
+                    <td>Met Salsel</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" onclick="calculateANOVA()">إحسب</button>
+    </form>
+
+    <!-- الجدول لعرض النتائج -->
+    <div id="resultContainer" style="display:none;">
+        <h2>النتائج</h2>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>F</th>
+                    <th>mean square</th>
+                    <th>degree of freedom</th>
+                    <th>sum of square</th>
+                    <th>source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="F"></td>
+                    <td id="MSTR"></td>
+                    <td>4</td>
+                    <td id="SSTR"></td>
+                    <td>treatment</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td id="MSE"></td>
+                    <td>20</td>
+                    <td id="SSE"></td>
+                    <td>error</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>24</td>
+                    <td id="STTO"></td>
+                    <td>total</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="#" class="back-button" onclick="window.location.reload()">رجوع</a>
+    </div>
+
+    <script>
+        function calculateANOVA() {
+            // جمع درجات الحرارة لكل مدينة
+            const cities = ['Mansoura', 'Alexandria', 'Manzala', 'Cairo', 'Salsel'];
+            let sum = {};
+            let avg = {};
+
+            cities.forEach(city => {
+                sum[city] = 0;
+                for (let i = 1; i <= 5; i++) {
+                    sum[city] += parseInt(document.getElementById(city + i).value || 0);
+                }
+                avg[city] = sum[city] / 5;
+            });
+
+            // حساب الإجمالي والوسيط الكلي
+            let totalSum = Object.values(sum).reduce((a, b) => a + b, 0);
+            let totalAvg = totalSum / 25;
+
+            // حساب SSTR
+            let sstr = 0;
+            cities.forEach(city => {
+                sstr += (avg[city] - totalAvg) ** 2;
+            });
+            sstr *= 5;
+
+            // حساب SSE
+            let sse = 0;
+            cities.forEach(city => {
+                for (let i = 1; i <= 5; i++) {
+                    sse += ((parseInt(document.getElementById(city + i).value || 0) - avg[city]) ** 2);
+                }
+            });
+
+            // حساب SSTO
+            let ssto = sstr + sse;
+
+            // حساب MSTR و MSE
+            let mstr = sstr / (cities.length - 1);
+            let mse = sse / 20;
+
+            // حساب النسبة F
+            let f = mstr / mse;
+
+            // عرض النتائج
+            document.getElementById("SSTR").textContent = sstr.toFixed(2);
+            document.getElementById("SSE").textContent = sse.toFixed(2);
+            document.getElementById("STTO").textContent = ssto.toFixed(2);
+            document.getElementById("MSTR").textContent = mstr.toFixed(2);
+            document.getElementById("MSE").textContent = mse.toFixed(2);
+            document.getElementById("F").textContent = f.toFixed(2);
+
+            // إخفاء النموذج وعرض النتائج
+            document.getElementById("temperatureForm").style.display = 'none';
+            document.getElementById("resultContainer").style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
